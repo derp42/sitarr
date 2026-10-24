@@ -23,3 +23,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t sitarr:test .
+      - name: Start the container with a fresh private data directory
+        run: >-
+          docker run --detach --name sitarr-smoke --read-only --tmpfs /tmp
+          --tmpfs /data:uid=10001,gid=10001,mode=0700
+          --publish 127.0.0.1:7171:7171 sitarr:test
+      - name: Verify startup and authentication
+        run: |
+          python - <<'PY'
+          import time
+          import urllib.error
+          import urllib.request
+          for attempt in range(20):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:7171/health', timeout=2) as response:
+                      assert response.status == 200
+                  break
+              except (OSError, AssertionError):
+                  time.sleep(1)
+          else:
+              raise SystemExit('Container did not become healthy')
+          try:
+              urllib.request.urlopen('http://127.0.0.1:7171/', timeout=2)
+          except urllib.error.HTTPError as error:
+              assert error.code == 401
+          else:
+              raise SystemExit('UI unexpectedly allowed anonymous access')
+          PY
+      - name: Container logs
+        if: failure()
+        run: docker logs sitarr-smoke
