@@ -1,0 +1,33 @@
+[Unit]
+Description=Sitarr parental guidance for media libraries
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sitarr
+Group=sitarr
+WorkingDirectory=/opt/sitarr
+Environment=SITARR_DATA=/var/lib/sitarr
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/sitarr/.venv/bin/uvicorn sitarr.app:app --host 0.0.0.0 --port 7171 --no-access-log
+StateDirectory=sitarr
+StateDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/sitarr
+
+[Install]
+WantedBy=multi-user.target
+

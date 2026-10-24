@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171b27">
+  <title>Sitarr · The library sitter</title>
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <aside>
+    <a class="brand" href="/"><img src="/static/icon.svg" alt="" width="38" height="38"><span>Sitarr<small>THE LIBRARY SITTER</small></span></a>
+    <nav aria-label="Main navigation">
+      <button data-page="library" class="active"><span>▤</span> Library</button>
+      <button data-page="activity"><span>◷</span> Activity & history</button>
+      <button data-page="connections"><span>⇄</span> Connections</button>
+      <button data-page="rules"><span>⚑</span> Guidance & rules</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="dot"></span> Local & in your control<small>v{{ version }} · Family rules, your call.</small></div>
+  </aside>
+  <main>
+    <header><div><span class="eyebrow">A SECOND OPINION FOR YOUR LIBRARY</span><h1 id="page-title">Make room for better movie nights.</h1><p id="page-subtitle">Age guidance that looks beyond the original rating.</p></div><div id="connection-status" class="pill">Checking connections…</div></header>
+    <section id="page-library" class="page">
+      <div class="stats" id="stats"></div>
+      <div class="toolbar"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a movie or show…" aria-label="Search library"></div><select id="status-filter" aria-label="Filter by status"><option value="">All titles</option><option value="pending">Waiting for lookup</option><option value="unreviewed">Needs review</option><option value="review">Needs attention</option><option value="ready">Ready to apply</option><option value="applied">Applied</option><option value="error">Lookup unavailable</option></select><button id="scan">Scan library</button><button id="lookup">Check ages</button><button id="apply-all" class="primary">Apply reviewed</button></div>
+      <div id="job-banner" class="job-banner" hidden></div>
+      <div class="table-wrap"><table><thead><tr><th>Title</th><th>Official</th><th>Age guidance</th><th>Household rating</th><th>Status</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="library-body"></tbody></table><div id="empty" class="empty" hidden><div class="empty-icon">☾</div><h2>Your library is in good hands.</h2><p>Add a Jellyfin or Plex connection, then scan your library to get started.</p><button id="empty-connect" class="primary">Add a connection</button></div></div>
+      <div class="table-footer"><span id="item-count"></span><div><button id="previous">← Previous</button><button id="next">Next →</button></div></div>
+      <p class="footnote">Age recommendations are guidance, not new official certifications. Unmatched titles stay visible for review. Existing stricter restrictions are preserved.</p>
+    </section>
+    <section id="page-activity" class="page" hidden><div class="section-heading"><h2>Work in progress</h2><button id="sync">Scan & check ages</button></div><div id="jobs" class="cards"></div><div class="section-heading"><h2>A history you can undo</h2><a class="button" href="/api/export" download>Export history</a></div><div id="changes" class="cards"></div></section>
+    <section id="page-connections" class="page" hidden><div class="section-heading"><div><h2>Your media servers</h2><p>Connect once. Keep your library and accounts where they are.</p></div><button id="add-server" class="primary">Add server</button></div><div id="servers" class="cards"></div><div class="section-heading"><div><h2>Protected viewers</h2><p>Keep each viewer’s existing ceiling and add exact-age tag restrictions.</p></div></div><div id="viewers" class="cards"></div><form id="protect-form" class="panel form-grid"><label>Jellyfin server<select id="protect-server" required></select></label><label>Viewer<select id="protect-user" required><option value="">Test a server to load viewers</option></select></label><label>Maximum recommended age<input id="protect-age" type="number" min="0" max="21" value="10" required></label><label class="check"><input id="protect-unknown" type="checkbox">Also block titles without Sitarr guidance</label><button class="primary" type="submit">Apply viewer rules</button><p class="footnote">Administrator status, passwords, and library access stay as they are. Plex sharing and Home restrictions are configured in Plex.</p></form></section>
+    <section id="page-rules" class="page" hidden><form id="rules-form" class="panel"><h2>Your household, your rules.</h2><p class="muted">Official ratings stay intact in Jellyfin. Sitarr adds age tags and a separate custom rating. Plex uses its content rating and labels, with originals kept in history.</p><div class="form-grid"><label class="check"><input id="auto-apply" type="checkbox">Automatically apply matched guidance</label><label class="check"><input id="csm-enabled" type="checkbox">Look up public Common Sense Media reviews</label><label>Check library every (hours)<input id="sync-hours" type="number" min="1" max="168" required></label><label>Titles to check per batch<input id="batch-size" type="number" min="1" max="2000" required></label><label>Days to cache source results<input id="cache-days" type="number" min="1" max="365" required></label><label>MDBList API key (optional)<input id="mdblist-token" type="password" autocomplete="off" placeholder="Use ID-based Common Sense lookups"></label></div><button type="submit" class="primary">Save rules</button></form><div class="panel"><h2>How age guidance becomes a household rating</h2><p class="muted">These are Sitarr’s US household bands. They do not claim to re-certify a film. Exact-age tags add finer control for protected viewers.</p><div class="rating-grid"><div><b>Movies</b><p>0–5 → G<br>6–10 → PG<br>11–13 → PG-13<br>14–17 → R<br>18–21 → NC-17</p></div><div><b>TV shows</b><p>0–5 → TV-Y<br>6–7 → TV-Y7<br>8–10 → TV-PG<br>11–14 → TV-14<br>15–21 → TV-MA</p></div><div><b>When there’s no match</b><p>Sitarr asks for review. It won’t invent an age or loosen an existing restriction. You can add your own age recommendation and a reason.</p></div></div></div></section>
+  </main>
+  <dialog id="review-dialog"><form id="review-form"><div class="section-heading"><h2 id="review-title">Review guidance</h2><button type="button" id="close-review" aria-label="Close">×</button></div><p id="review-info" class="muted"></p><input id="review-key" type="hidden"><label>Household minimum age<input id="review-age" type="number" min="0" max="21" required></label><label>Why is this age appropriate?<textarea id="review-reason" rows="3" minlength="3" maxlength="2000" placeholder="Record your reasoning or the review you consulted" required></textarea></label><p class="footnote">This saves a reviewed recommendation. Use Apply to send it to your media server.</p><button class="primary" type="submit">Save recommendation</button></form></dialog>
+  <dialog id="server-dialog"><form id="server-form"><div class="section-heading"><h2>Connect a media server</h2><button type="button" id="close-server" aria-label="Close">×</button></div><input id="server-id" type="hidden"><label>Server type<select id="server-kind"><option value="jellyfin">Jellyfin</option><option value="plex">Plex</option></select></label><label>Name<input id="server-name" required placeholder="Living room library"></label><label>Server URL<input id="server-url" type="url" required placeholder="http://192.168.1.10:8096"></label><label>API key / Plex token<input id="server-token" type="password" required autocomplete="off"></label><button class="primary" type="submit">Save connection</button></form></dialog>
+  <div id="toast" role="status" hidden></div>
+</body>
+</html>

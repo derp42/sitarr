@@ -1,0 +1,19 @@
+services:
+  sitarr:
+    build: .
+    ports:
+      - "${SITARR_BIND_ADDRESS:-127.0.0.1}:7171:7171"
+    environment:
+      SITARR_DATA: /data
+    volumes:
+      - ./data:/data
+    user: "${SITARR_UID:-1000}:${SITARR_GID:-1000}"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
